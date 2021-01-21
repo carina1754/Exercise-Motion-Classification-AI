@@ -21,6 +21,21 @@ submission=pd.read_csv('sample_submission.csv')
 
 start = time()
 
+def min_max_scaler(mylist):
+  max = mylist[0]
+  min = mylist[0]
+  newlist = []
+  for i in range(len(mylist)):
+    if max < mylist[i]: max = mylist[i]
+    if min > mylist[i]: min = mylist[i]
+
+
+  for j in range(len(mylist)):
+    newelement = (mylist[j] - min) / (max - min) 
+    newlist.append(newelement)
+
+  return newlist
+
 train = train[['id','time','acc_x','acc_y','acc_z','gy_x','gy_y','gy_z']]
 train = train.assign(loc = lambda x: np.hypot(np.hypot(x['gy_x'],x['gy_y']),x['gy_z']))
 train = train.assign(acc = lambda x: np.hypot(np.hypot(x['acc_x'],x['acc_y']),x['acc_z']))
