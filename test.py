@@ -22,6 +22,7 @@ submission=pd.read_csv('sample_submission.csv')
 start = time()
 
 train = train[['id','time','acc_x','acc_y','acc_z','gy_x','gy_y','gy_z']]
+
 train = train.assign(loc = lambda x: np.hypot(np.hypot(x['gy_x'],x['gy_y']),x['gy_z']))
 train = train.assign(acc = lambda x: np.hypot(np.hypot(x['acc_x'],x['acc_y']),x['acc_z']))
 train = train.assign(move = lambda x: np.sqrt(np.sqrt(x['gy_x']**2+x['acc_x']**2)**2+np.sqrt(x['gy_y']**2+x['acc_y']**2)**2+np.sqrt(x['gy_z']**2+x['acc_z']**2)**2))
@@ -30,6 +31,8 @@ train = train.assign(angle_y = lambda x: np.arctan(-x['acc_y']/np.sqrt(x['acc_x'
 train = train.assign(angle_z = lambda x: np.arctan(-x['acc_z']/np.sqrt(x['acc_x']**2 + x['acc_y']**2))*180/np.pi)
 train = train.assign(roll = lambda x: np.arctan(x['acc_y']/x['acc_z']))
 train = train.assign(pitch = lambda x: np.arctan(x['acc_x']/x['acc_z']))
+
+
 
 test = test[['id','time','acc_x','acc_y','acc_z','gy_x','gy_y','gy_z']]
 test = test.assign(loc = lambda x: np.hypot(np.hypot(x['gy_x'],x['gy_y']),x['gy_z']))
@@ -40,6 +43,8 @@ test = test.assign(angle_y = lambda x: np.arctan(-x['acc_y']/np.sqrt(x['acc_x']*
 test = test.assign(angle_z = lambda x: np.arctan(-x['acc_z']/np.sqrt(x['acc_x']**2 + x['acc_y']**2))*180/np.pi)
 test = test.assign(roll = lambda x: np.arctan(x['acc_y']/x['acc_z']))
 test = test.assign(pitch = lambda x: np.arctan(x['acc_x']/x['acc_z']))
+
+
 
 X=tf.reshape(np.array(train.iloc[:,2:]),[-1, 600,14])
 y = tf.keras.utils.to_categorical(train_labels['label']) 
@@ -55,7 +60,7 @@ model.add(Dropout(0.5))
 model.add(Dense(61, activation='softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-history = model.fit(X,y, epochs=100, batch_size=128, validation_split=0.2)
+history = model.fit(X,y, epochs=10, batch_size=128, validation_split=0.2)
 
 
 print(f'\nWhen hidden layers are 2, Elapse training time : {time() - start} seconds\n')
